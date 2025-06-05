@@ -1,9 +1,12 @@
 package models
 
-import "time"
+import (
+	"event-booking/db"
+	"time"
+)
 
 type Event struct {
-	ID          int
+	ID          int64
 	Name        string    `binding:"required"`
 	Description string    `binding:"required"`
 	Location    string    `binding:"required"`
@@ -13,10 +16,25 @@ type Event struct {
 
 var events = []Event{}
 
-func (e Event) Save() {
-	// TODO: add it to a db
+func (e Event) Save() error {
+	query := `
+		INSERT INTO events(name, description, location, dateTime, user_id) 
+		VALUES (?,?,?,?,?)`
+	stmt, err := db.DB.Prepare(query)
 
-	events = append(events, e)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	e.ID = id
+	return err
 }
 
 func GetAllEvents() []Event {
