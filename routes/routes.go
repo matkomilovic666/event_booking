@@ -18,6 +18,10 @@ func RegisterRoutes(server *gin.Engine) {
 	authenticated.POST("/events/:id/register", registerForEvent)
 	authenticated.DELETE("/events/:id/register", cancelRegistration)
 
+	// TODO List
+	// Add a route that lists all registrations
+	//
+
 	server.POST("/signup", signup)
 	server.POST("/login", login)
 }
